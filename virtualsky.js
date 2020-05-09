@@ -1167,6 +1167,9 @@ VirtualSky.prototype.getPhrase = function(key,key2){
 		else return this.htmlDecode(this.lang[key2]);
 	}else return this.htmlDecode(this.lang[key]) || this.htmlDecode(this.langs.en[key]) || "";
 };
+VirtualSky.prototype.getDevicePixelRatio = function(){
+	return window.devicePixelRatio;
+};
 VirtualSky.prototype.resize = function(w,h){
 	if(!this.canvas) return;
 	if(!w || !h){
@@ -1174,12 +1177,16 @@ VirtualSky.prototype.resize = function(w,h){
 			this.canvas.css({'width':0,'height':0});
 			w = window.innerWidth;
 			h = window.innerHeight;
+			this.canvas.width = w;
+			this.canvas.height = h;
 			this.canvas.css({'width':w+'px','height':h+'px'});
 		}else{
 			// We have to zap the width of the canvas to let it take the width of the container
 			this.canvas.css({'width':0,'height':0});
 			w = this.container.outerWidth();
 			h = this.container.outerHeight();
+			this.canvas.width = w;
+			this.canvas.height = h;
 			this.canvas.css({'width':w+'px','height':h+'px'});
 		}
 	}else{
@@ -1196,8 +1203,9 @@ VirtualSky.prototype.resize = function(w,h){
 };
 VirtualSky.prototype.setWH = function(w,h){
 	if(!w || !h) return;
-	this.c.width = w;
-	this.c.height = h;
+	this.c.width = w*this.getDevicePixelRatio();
+	this.c.height = h*this.getDevicePixelRatio();
+	this.c.getContext('2d').scale(this.getDevicePixelRatio(),this.getDevicePixelRatio());
 	this.wide = w;
 	this.tall = h;
 	this.changeFOV();
