@@ -307,6 +307,7 @@ function VirtualSky(input){
 	this.plugins = [];
 	this.calendarevents = [];
 	this.events = {};	// Let's add some default events
+	this.hooks = { init: [], drawStars: []};
 
 	// Projections
 	this.projections = {
@@ -978,6 +979,10 @@ function VirtualSky(input){
 
 	if(this.islive) var interval = window.setInterval(function(sky){ sky.setClock('now'); },1000,this);
 
+	for (var i = 0; i < this.hooks.init.length; ++i){
+		if(typeof this.hooks.init[i].init=="function") this.hooks.init[i].init.call(this);
+	}
+
 	return this;
 }
 
@@ -1085,6 +1090,10 @@ VirtualSky.prototype.init = function(d){
 		if(is(d.callback.mouseout,f)) this.callback.mouseout = d.callback.mouseout;
 		if(is(d.callback.cursor,f)) this.callback.cursor = d.callback.cursor;
 		if(is(d.callback.contextmenu,f)) this.callback.contextmenu = d.callback.contextmenu;
+	}
+	if(is(d.hooks,o)){
+		if(is(d.hooks.init,o)) this.hooks.init = d.hooks.init;
+		if(is(d.hooks.drawStars,o)) this.hooks.drawStars = d.hooks.drawStars;
 	}
 	return this;
 };
@@ -2604,6 +2613,11 @@ VirtualSky.prototype.createLightbox = function(lb,opts){
 VirtualSky.prototype.drawStars = function(){
 
 	if(!this.showstars && !this.showstarlabels) return this;
+
+	for (var i = 0; i < this.hooks.drawStars.length; ++i){
+		if(typeof this.hooks.drawStars[i].init=="function") this.hooks.drawStars[i].init.call(this);
+	}
+
 	var mag,i,p,d,atmos,fovf;
 	var c = this.ctx;
 	c.beginPath();
@@ -3588,9 +3602,11 @@ S.virtualsky = function(placeholder,input) {
 	}
 	if(!input) input = {};
 	input.plugins = S.virtualsky.plugins;
+	input.hooks = S.virtualsky.hooks;
 	return new VirtualSky(input);
 };
 
 S.virtualsky.plugins = [];
+S.virtualsky.hooks = {init: [], drawStars: []};
 
 })(S);
