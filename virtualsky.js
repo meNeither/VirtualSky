@@ -976,7 +976,12 @@ function VirtualSky(input){
 	this.moon = p.moon;
 	this.sun = p.sun;
 
-	if(this.islive) var interval = window.setInterval(function(sky){ sky.setClock('now'); },1000,this);
+	if(this.islive) {
+		var tick = (this.live == parseInt(this.live, 10)) ? this.live : 1000;
+		var interval = window.setInterval(function(sky){
+			sky.setClock('now');
+		},tick,this);
+	}
 
 	return this;
 }
@@ -1073,7 +1078,8 @@ VirtualSky.prototype.init = function(d){
 	if(is(d.boundaries,o)) this.boundaries = d.boundaries;
 	if(is(d.width,n)) this.wide = d.width;
 	if(is(d.height,n)) this.tall = d.height;
-	if(is(d.live,b)) this.islive = d.live;
+	if(is(d.live,b) || is(d.live,n)) this.islive = d.live;
+	if(is(d.live,n)) this.live = d.live; else this.live = null;
 	if(is(d.lang,s) && d.lang.length==2) this.language = d.lang;
 	if(is(d.fontfamily,s)) this.fntfam = d.fontfamily.replace(/%20/g,' ');
 	if(is(d.fontsize,s)) this.fntsze = d.fontsize;
@@ -3336,8 +3342,9 @@ VirtualSky.prototype.panStep = function(){
 };
 
 VirtualSky.prototype.liveSky = function(pos){
+	var tick = (this.live == parseInt(this.live, 10)) ? this.live : 1000;
 	this.islive = !this.islive;
-	if(this.islive) interval = window.setInterval(function(sky){ sky.setClock('now'); },1000,this);
+	if(this.islive) interval = window.setInterval(function(sky){ sky.setClock('now'); },tick,this);
 	else{
 		if(interval!==undefined) clearInterval(interval);
 	}
@@ -3345,10 +3352,11 @@ VirtualSky.prototype.liveSky = function(pos){
 };
 
 VirtualSky.prototype.start = function(){
+	var tick = (this.live == parseInt(this.live, 10)) ? this.live : 1000;
 	this.islive = true;
 	// Clear existing interval
 	if(interval!==undefined) clearInterval(interval);
-	interval = window.setInterval(function(sky){ sky.setClock('now'); },1000,this);
+	interval = window.setInterval(function(sky){ sky.setClock('now'); },tick,this);
 };
 VirtualSky.prototype.stop = function(){
 	this.islive = false;
