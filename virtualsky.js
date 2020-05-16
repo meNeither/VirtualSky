@@ -924,6 +924,10 @@ function VirtualSky(input){
 	// Update the colours
 	this.updateColours();
 
+	for (var i = 0; i < this.hooks.init.length; ++i){
+		if(typeof this.hooks.init[i].init=="function") this.hooks.init[i].init.call(this);
+	}
+
 	// Load the language file
 	this.loadLanguage(this.language,'',fromqs);
 
@@ -978,10 +982,6 @@ function VirtualSky(input){
 	this.sun = p.sun;
 
 	if(this.islive) var interval = window.setInterval(function(sky){ sky.setClock('now'); },1000,this);
-
-	for (var i = 0; i < this.hooks.init.length; ++i){
-		if(typeof this.hooks.init[i].init=="function") this.hooks.init[i].init.call(this);
-	}
 
 	return this;
 }
