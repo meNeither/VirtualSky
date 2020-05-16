@@ -976,7 +976,12 @@ function VirtualSky(input){
 	this.moon = p.moon;
 	this.sun = p.sun;
 
-	if(this.islive) var interval = window.setInterval(function(sky){ sky.setClock('now'); },1000,this);
+	if(this.islive) {
+		var tick = (this.islive == parseInt(this.islive, 10)) ? this.islive : 1000;
+		var interval = window.setInterval(function(sky){
+			sky.setClock('now');
+		},tick,this);
+	}
 
 	return this;
 }
