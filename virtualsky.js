@@ -2293,15 +2293,15 @@ VirtualSky.prototype.updateSkyGradient = function(){
 };
 
 VirtualSky.prototype.draw = function(){
-	// Redraw within 20ms. Used to avoid redraw pilling up, introducing vast lag
+
 	if(this.pendingRefresh !== undefined) return;
-	this.pendingRefresh = window.setTimeout(this.drawImmediate.bind(this), 20);
+	this.pendingRefresh = window.requestAnimFrame(this.drawImmediate.bind(this));
 };
 
 VirtualSky.prototype.drawImmediate = function(proj){
 	// Don't bother drawing anything if there is no physical area to draw on
 	if(this.pendingRefresh !== undefined){
-		window.clearTimeout(this.pendingRefresh);
+		window.cancelAnimFrame(this.pendingRefresh);
 		this.pendingRefresh = undefined;
 	}
 
@@ -3339,6 +3339,9 @@ VirtualSky.prototype.panTo = function(ra,dec,s){
 // shim layer with setTimeout fallback
 window.requestAnimFrame = (function(){
 	return  window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function( callback ){ window.setTimeout(callback, 1000 / 60); };
+})();
+window.cancelAnimFrame = (function(){
+	return  window.cancelAnimationFrame || window.mozCancelAnimationFrame || function( callback ){ window.clearTimeout(callback); };
 })();
 
 // Animation step for the panning
