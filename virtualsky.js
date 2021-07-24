@@ -2487,7 +2487,7 @@ VirtualSky.prototype.drawImmediate = function(proj){
 		});
 	}
 
-	if(S('.'+this.id+'_position').length == 0){
+	if(S('.'+this.id+'_position').length == 0  && this.showposition){
 		this.container.append('<div class="'+this.id+'_position" title="'+this.getPhrase('positionchange')+'">'+positionstring+'</div>');
 		S('.'+this.id+'_position').on('click',{sky:this},function(e){
 			var s = e.data.sky;
