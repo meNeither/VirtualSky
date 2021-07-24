@@ -2437,7 +2437,7 @@ VirtualSky.prototype.drawImmediate = function(proj){
 			e.data.me.toggleHelp();
 		});
 	}
-	if(this.container.find('.'+this.id+'_clock').length == 0){
+	if(this.container.find('.'+this.id+'_clock').length == 0 && this.showdate){
 		this.container.append('<div class="'+this.id+'_clock" title="'+this.getPhrase('datechange')+'">'+clockstring+'</div>');
 		off = S('#'+this.idinner).position();
 		this.container.find('.'+this.id+'_clock').css({
