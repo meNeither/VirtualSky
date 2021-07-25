@@ -983,7 +983,7 @@ function VirtualSky(input){
 
 	if(this.islive) {
 		var tick = (this.live == parseInt(this.live, 10)) ? this.live : 1000;
-		var interval = window.setInterval(function(sky){
+		this.interval = window.setInterval(function(sky){
 			sky.setClock('now');
 		},tick,this);
 	}
@@ -3379,9 +3379,9 @@ VirtualSky.prototype.panStep = function(){
 VirtualSky.prototype.liveSky = function(pos){
 	var tick = (this.live == parseInt(this.live, 10)) ? this.live : 1000;
 	this.islive = !this.islive;
-	if(this.islive) interval = window.setInterval(function(sky){ sky.setClock('now'); },tick,this);
+	if(this.islive) this.interval = window.setInterval(function(sky){ sky.setClock('now'); },tick,this);
 	else{
-		if(interval!==undefined) clearInterval(interval);
+		if(this.interval!==undefined) clearInterval(this.interval);
 	}
 	return this;
 };
@@ -3390,13 +3390,13 @@ VirtualSky.prototype.start = function(){
 	var tick = (this.live == parseInt(this.live, 10)) ? this.live : 1000;
 	this.islive = true;
 	// Clear existing interval
-	if(interval!==undefined) clearInterval(interval);
-	interval = window.setInterval(function(sky){ sky.setClock('now'); },tick,this);
+	if(this.interval!==undefined) clearInterval(this.interval);
+	this.interval = window.setInterval(function(sky){ sky.setClock('now'); },tick,this);
 };
 VirtualSky.prototype.stop = function(){
 	this.islive = false;
 	// Clear existing interval
-	if(interval!==undefined) clearInterval(interval);
+	if(this.interval!==undefined) clearInterval(this.interval);
 };
 // Increment the clock by the amount specified
 VirtualSky.prototype.advanceTime = function(by,wait){
