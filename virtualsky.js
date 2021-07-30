@@ -1185,7 +1185,12 @@ VirtualSky.prototype.getPhrase = function(key,key2){
 	}else return this.htmlDecode(this.lang[key]) || this.htmlDecode(this.langs.en[key]) || "";
 };
 VirtualSky.prototype.getDevicePixelRatio = function(){
-	return window.devicePixelRatio;
+	// Prevent flickering in Chrome
+	if (window.chrome) {
+		return window.devicePixelRatio*2;
+	} else {
+		return window.devicePixelRatio;
+	}
 };
 VirtualSky.prototype.resize = function(w,h){
 	if(!this.canvas) return;
