@@ -1043,6 +1043,7 @@ VirtualSky.prototype.init = function(d){
 		clock: o,
 		background: s,
 		color: s,
+		colours: o,
 		fov: n,
 		objects: s,
 		base: s,
@@ -1063,6 +1064,7 @@ VirtualSky.prototype.init = function(d){
 	if(is(d.constellationlabels,b)) this.constellation.labels = d.constellationlabels;
 	if(is(d.constellationwidth,n)) this.constellation.lineWidth = d.constellationwidth;
 	if(is(d.constellationboundarieswidth,n)) this.constellation.boundaryWidth = d.constellationboundarieswidth;
+	if(is(d.colours,o)) this.colours = d.colours;
 	if(is(d.gridlines_az,b)) this.grid.az = d.gridlines_az;
 	if(is(d.gridlines_eq,b)) this.grid.eq = d.gridlines_eq;
 	if(is(d.gridlines_gal,b)) this.grid.gal = d.gridlines_gal;
