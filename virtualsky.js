@@ -307,7 +307,7 @@ function VirtualSky(input){
 	this.plugins = [];
 	this.calendarevents = [];
 	this.events = {};	// Let's add some default events
-	this.hooks = { init: [], createSky: [], drawStars: [], endClip: [], changePlanetMag: null};
+	this.hooks = { init: [], createSky: [], drawStars: [], endClip: [], changePlanetMag: null, updateSkyGradient: null};
 
 	// Projections
 	this.projections = {
@@ -1105,6 +1105,7 @@ VirtualSky.prototype.init = function(d){
 		if(is(d.hooks.endClip,o)) this.hooks.endClip = d.hooks.endClip;
 		if(is(d.hooks.createSky,o)) this.hooks.createSky = d.hooks.createSky;
 		if(is(d.hooks.changePlanetMag,f)) this.hooks.changePlanetMag = d.hooks.changePlanetMag;
+		if(is(d.hooks.updateSkyGradient,f)) this.hooks.updateSkyGradient = d.hooks.updateSkyGradient;
 	}
 	return this;
 };
@@ -2286,23 +2287,27 @@ VirtualSky.prototype.positionCredit = function(){
 	this.container.find('.'+this.id+'_credit').css({position:'absolute',top:(parseFloat(this.tall)-this.padding-this.fontsize())+'px',left:this.padding+'px'});
 };
 VirtualSky.prototype.updateSkyGradient = function(){
-	var s = null;
-	if(this.ctx && this.hasGradient()){
-		if(this.projection.polartype){
-			if(typeof this.ctx.createRadialGradient==="function"){
-				s = this.ctx.createRadialGradient(this.wide/2,this.tall/2,0,this.wide/2,this.tall/2,this.tall/2);
-				s.addColorStop(0, 'rgba(0,0,0,1)');
-				s.addColorStop(0.7, 'rgba(0,0,0,0.2)');
-				s.addColorStop(1, 'rgba(0,50,80,0.3)');
+	if(typeof this.hooks.updateSkyGradient=="function") {
+		this.hooks.updateSkyGradient.call(this);
+	} else {
+		var s = null;
+		if(this.ctx && this.hasGradient()){
+			if(this.projection.polartype){
+				if(typeof this.ctx.createRadialGradient==="function"){
+					s = this.ctx.createRadialGradient(this.wide/2,this.tall/2,0,this.wide/2,this.tall/2,this.tall/2);
+					s.addColorStop(0, 'rgba(0,0,0,1)');
+					s.addColorStop(0.7, 'rgba(0,0,0,0.2)');
+					s.addColorStop(1, 'rgba(0,50,80,0.3)');
+				}
+			}else{
+				s = this.ctx.createLinearGradient(0,0,0,this.tall);
+				s.addColorStop(0.0, 'rgba(0,30,50,0.1)');
+				s.addColorStop(0.7, 'rgba(0,30,50,0.35)');
+				s.addColorStop(1, 'rgba(0,50,80,0.6)');
 			}
-		}else{
-			s = this.ctx.createLinearGradient(0,0,0,this.tall);
-			s.addColorStop(0.0, 'rgba(0,30,50,0.1)');
-			s.addColorStop(0.7, 'rgba(0,30,50,0.35)');
-			s.addColorStop(1, 'rgba(0,50,80,0.6)');
 		}
+		this.skygrad = s;
 	}
-	this.skygrad = s;
 	return this;
 };
 
