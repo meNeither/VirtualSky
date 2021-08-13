@@ -307,7 +307,7 @@ function VirtualSky(input){
 	this.plugins = [];
 	this.calendarevents = [];
 	this.events = {};	// Let's add some default events
-	this.hooks = { init: [], createSky: [], drawStars: [], endClip: []};
+	this.hooks = { init: [], createSky: [], drawStars: [], endClip: [], changePlanetMag: null};
 
 	// Projections
 	this.projections = {
@@ -1104,6 +1104,7 @@ VirtualSky.prototype.init = function(d){
 		if(is(d.hooks.drawStars,o)) this.hooks.drawStars = d.hooks.drawStars;
 		if(is(d.hooks.endClip,o)) this.hooks.endClip = d.hooks.endClip;
 		if(is(d.hooks.createSky,o)) this.hooks.createSky = d.hooks.createSky;
+		if(is(d.hooks.changePlanetMag,f)) this.hooks.changePlanetMag = d.hooks.changePlanetMag;
 	}
 	return this;
 };
@@ -2755,10 +2756,11 @@ VirtualSky.prototype.drawPlanets = function(){
 		if((this.showplanets || this.showplanetlabels) && this.isVisible(pos.el) && mag < this.magnitude && !this.isPointBad(pos)){
 			var d = 0;
 			if(mag !== undefined){
-				d = 0.8*Math.max(3-mag/2, 0.5);
+				mag = (typeof this.hooks.changePlanetMag=="function") ? this.hooks.changePlanetMag.call(this, mag) : mag;
+				d = 0.8*(3-mag/2);
 				if(this.hasAtmos()) d *= Math.exp(-((90-pos.el)*this.d2r)*0.6);
 			}
-			if(d < 1.5) d = 1.5;
+			if(d < 0) d = ((typeof this.hooks.changePlanetMag=="function")) ? 0 : 1.5;
 			this.drawPlanet(pos.x,pos.y,d,colour,this.planets[p][0]);
 		}
 
