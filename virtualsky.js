@@ -307,7 +307,7 @@ function VirtualSky(input){
 	this.plugins = [];
 	this.calendarevents = [];
 	this.events = {};	// Let's add some default events
-	this.hooks = { init: [], createSky: [], drawStars: [], endClip: [], changePlanetMag: null, updateSkyGradient: null};
+	this.hooks = { init: [], createSky: [], drawStars: [], startClip: [], endClip: [], changePlanetMag: null, updateSkyGradient: null};
 
 	// Projections
 	this.projections = {
@@ -1102,6 +1102,7 @@ VirtualSky.prototype.init = function(d){
 	if(is(d.hooks,o)){
 		if(is(d.hooks.init,o)) this.hooks.init = d.hooks.init;
 		if(is(d.hooks.drawStars,o)) this.hooks.drawStars = d.hooks.drawStars;
+		if(is(d.hooks.startClip,o)) this.hooks.startClip = d.hooks.startClip;
 		if(is(d.hooks.endClip,o)) this.hooks.endClip = d.hooks.endClip;
 		if(is(d.hooks.createSky,o)) this.hooks.createSky = d.hooks.createSky;
 		if(is(d.hooks.changePlanetMag,f)) this.hooks.changePlanetMag = d.hooks.changePlanetMag;
@@ -2562,6 +2563,11 @@ VirtualSky.prototype.startClip = function(){
 		this.ctx.arc(this.wide/2,this.tall/2,-0.5+this.tall/2,0,Math.PI*2,true);
 		this.ctx.clip();
 	}
+
+	for (var i = 0; i < this.hooks.startClip.length; ++i){
+		if(typeof this.hooks.startClip[i].init=="function") this.hooks.startClip[i].init.call(this);
+	}
+
 	return this;
 };
 VirtualSky.prototype.endClip = function(){
@@ -3642,6 +3648,6 @@ S.virtualsky = function(placeholder,input) {
 };
 
 S.virtualsky.plugins = [];
-S.virtualsky.hooks = {init: [], createSky: [], drawStars: [], endClip: []};
+S.virtualsky.hooks = {init: [], createSky: [], drawStars: [], startClip: [], endClip: []};
 
 })(S);
