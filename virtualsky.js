@@ -1217,10 +1217,9 @@ VirtualSky.prototype.resize = function(w,h){
 	}
 	if(w == this.wide && h == this.tall) return;
 	this.setWH(w,h);
-	this.positionCredit();
 	this.updateSkyGradient();
-	this.drawImmediate();
 	this.container.css({'font-size':this.fontsize()+'px'});
+	this.drawImmediate();
 	this.trigger('resize',{vs:this});
 };
 VirtualSky.prototype.setWH = function(w,h){
@@ -1338,7 +1337,7 @@ VirtualSky.prototype.createSky = function(){
 
 	if(this.q.debug) S('body').append('<div style="position: absolute;bottom:0px;right:0px;padding: 0.25em 0.5em;background-color:white;color:black;max-width: 50%;" id="debug"></div>');
 	if(this.fntfam) this.container.css({'font-family':this.fntfam});
-	if(this.fntsze) this.container.css({'font-size':this.fntsze});
+	this.container.css({'font-size': (this.fntsze ? this.fntsze : this.fontsize()+'px')});
 
 	if(this.container.length == 0){
 		// No appropriate container exists. So we'll make one.
@@ -2280,7 +2279,7 @@ VirtualSky.prototype.fontsize = function(){
 	return (m < 600) ? ((m < 500) ? ((m < 350) ? ((m < 300) ? ((m < 250) ? 9 : 10) : 11) : 12) : 14) : parseInt(this.container.css('font-size'));
 };
 VirtualSky.prototype.positionCredit = function(){
-	this.container.find('.'+this.id+'_credit').css({position:'absolute',top:(parseFloat(this.tall)-this.padding-this.fontsize())+'px',left:this.padding+'px'});
+	return;
 };
 VirtualSky.prototype.updateSkyGradient = function(){
 	if(typeof this.hooks.updateSkyGradient=="function") {
@@ -2389,7 +2388,6 @@ VirtualSky.prototype.drawImmediate = function(proj){
 	c.fillStyle = txtcolour;
 	c.lineWidth = 1.5;
 	this.setFont();
-	this.container.css({'font-size':this.fontsize()+'px','position':'relative'});
 
 	// Time line
 	if(this.showdate){
@@ -2407,11 +2405,20 @@ VirtualSky.prototype.drawImmediate = function(proj){
 	if(this.credit){
 		var credit = this.getPhrase('power');
 		var metric_credit = this.drawText(credit,this.padding,this.tall-this.padding);
+		var creditWidth = Math.ceil(metric_credit)+'px';
+		var creditHeight = fontsize+'px';
+		var creditElement = d.find('.'+this.id+'_credit');
 		// Float a transparent link on top of the credit text
-		if(d.find('.'+this.id+'_credit').length == 0) d.append('<div class="'+this.id+'_credit"><a href="http://slowe.github.io/VirtualSky/" target="_parent" title="Las Cumbres Observatory">'+this.getPhrase('powered')+'</a></div>');
-		d.find('.'+this.id+'_credit').css({padding:0,'z-index':20,display:'block',overflow:'hidden','background-color':'transparent'});
-		d.find('.'+this.id+'_credit a').css({display:'block',width:Math.ceil(metric_credit)+'px',height:fontsize+'px'});
-		this.positionCredit();
+		if(creditElement.length == 0){
+			d.append('<div class="'+this.id+'_credit"><a href="http://slowe.github.io/VirtualSky/" target="_parent" title="Las Cumbres Observatory">'+this.getPhrase('powered')+'</a></div>');
+			creditElement = d.find('.'+this.id+'_credit');
+			creditElement.css({padding:0,'z-index':20,display:'block',overflow:'hidden','background-color':'transparent',position:'absolute',left:this.padding+'px',bottom:this.padding+'px'});
+		}
+		if(this._creditLinkWidth !== creditWidth || this._creditLinkHeight !== creditHeight){
+			creditElement.find('a').css({display:'block',width:creditWidth,height:creditHeight});
+			this._creditLinkWidth = creditWidth;
+			this._creditLinkHeight = creditHeight;
+		}
 	}
 	if(this.showhelp){
 		var helpstr = '?';
