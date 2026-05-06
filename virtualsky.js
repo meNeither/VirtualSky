@@ -982,9 +982,8 @@ function VirtualSky(input){
 	this.sun = p.sun;
 
 	if(this.islive) {
-		var tick = (this.live == parseInt(this.live, 10)) ? this.live : 1000;
 		this.spin = 0;
-		this.advanceTime(1,tick);
+		this.start();
 	}
 
 	return this;
@@ -3399,11 +3398,15 @@ VirtualSky.prototype.panStep = function(){
 
 VirtualSky.prototype.liveSky = function(pos){
 	var tick = (this.live == parseInt(this.live, 10)) ? this.live : 1000;
+	var baseClock = this.clock ? this.clock.getTime() : (new Date()).getTime();
+	var baseNow = (new Date()).getTime();
 	this.islive = !this.islive;
-	if(this.islive){
-		this.spin = 0;
-		this.advanceTime(1,tick);
-	}else{
+	if(this.islive) this.interval = window.setInterval(function(sky,baseClock,baseNow){
+		var elapsed = ((new Date()).getTime() - baseNow) / 1000;
+		sky.setClock(new Date(baseClock + (elapsed * 1000)));
+		sky.calendarUpdate();
+	},tick,this,baseClock,baseNow);
+	else{
 		if(this.interval!==undefined) clearInterval(this.interval);
 		if(this.interval_time!==undefined) clearInterval(this.interval_time);
 		if(this.interval_calendar!==undefined) clearInterval(this.interval_calendar);
@@ -3413,13 +3416,18 @@ VirtualSky.prototype.liveSky = function(pos){
 
 VirtualSky.prototype.start = function(){
 	var tick = (this.live == parseInt(this.live, 10)) ? this.live : 1000;
+	var baseClock = this.clock ? this.clock.getTime() : (new Date()).getTime();
+	var baseNow = (new Date()).getTime();
 	this.islive = true;
 	// Clear existing interval
 	if(this.interval!==undefined) clearInterval(this.interval);
 	if(this.interval_time!==undefined) clearInterval(this.interval_time);
 	if(this.interval_calendar!==undefined) clearInterval(this.interval_calendar);
-	this.spin = 0;
-	this.advanceTime(1,tick);
+	this.interval = window.setInterval(function(sky,baseClock,baseNow){
+		var elapsed = ((new Date()).getTime() - baseNow) / 1000;
+		sky.setClock(new Date(baseClock + (elapsed * 1000)));
+		sky.calendarUpdate();
+	},tick,this,baseClock,baseNow);
 };
 VirtualSky.prototype.stop = function(){
 	this.islive = false;
